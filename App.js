@@ -1,8 +1,42 @@
 import React, {useState, useEffect} from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { SafeAreaView, StyleSheet, Text, View, FlatList, TextInput } from 'react-native';
+import { SafeAreaView, StyleSheet, Text, View, FlatList, TextInput, TouchableOpacity, Image } from 'react-native';
 
 export default function App() {
+
+  const [defaultRating, setdefaultRating] = useState(2);
+  const [maxRating, setmaxRating] = useState([1, 2, 3, 4, 5]);
+
+  const starImgFilled = 'https://raw.githubusercontent.com/tranhonghan/images/main/star_filled.png';
+  const starImgCorner = 'https://raw.githubusercontent.com/tranhonghan/images/main/star_corner.png';
+
+  const CustomRatingBar = () => {
+    return (
+      <View style={styles.customRatingBarStyle}>
+        {
+          maxRating.map((item, key) => {
+            return (
+              <TouchableOpacity
+                activeOpacity={0.7}
+                key={item}
+                onPress={() => setdefaultRating(item)}
+              >
+                <Image
+                  style={styles.starImgStyle}
+                  source={
+                    item <= defaultRating
+                      ? {uri: starImgFilled}
+                      : {uri: starImgCorner}
+                  }
+                />
+
+              </TouchableOpacity>
+            )
+          })
+        }
+      </View>
+    )
+  }
 
   const [filterData, setfilterData] = useState([]);
   const [masterData, setmasterData] = useState([]);
@@ -47,6 +81,7 @@ export default function App() {
     return (
       <Text style={styles.itemStyle}>
         {item.id}{'. '}{item.title.toUpperCase()}
+        <CustomRatingBar/>  
       </Text>
     )
   }
@@ -68,12 +103,13 @@ export default function App() {
         underlineColorAndroid="transparent"
         onChangeText={(text) => searchFilter(text)}
       />
-      <FlatList
+      <FlatList 
         data={filterData}
         keyExtractor={(item, index) => index.toString()}
         ItemSeparatorComponent={ItemSeparatorView}
-        renderItem={ItemView}
-      />
+        renderItem={ItemView}>
+      </FlatList>
+        
       <StatusBar style="auto" />
     </View>
   );
@@ -96,5 +132,15 @@ const styles = StyleSheet.create({
     margin: 5,
     borderColor: '#009688',
     backgroundColor: 'white'
+  },
+  customRatingBarStyle: {
+    justifyContent: 'center',
+    flexDirection: 'row',
+    marginTop: 30
+  },
+  starImgStyle: {
+    width: 20,
+    height: 20,
+    resizeMode: 'cover'
   }
 });
